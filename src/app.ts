@@ -5,6 +5,7 @@ import morgan from "morgan";
 import routes from "./routes";
 import { errorHandler } from "./middlewares/error.middleware";
 import config from "./config";
+import logger from "./utils/logger.utils";
 
 const app = express();
 
@@ -13,7 +14,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(helmet());
-app.use(morgan("dev"));
+app.use(
+  morgan("dev", {
+    stream: {
+      write: (message) => logger.http(message.trim())
+    }
+  })
+);
 
 // Routes
 app.use("/api", routes);
