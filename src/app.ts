@@ -6,6 +6,7 @@ import routes from "./routes";
 import { errorHandler } from "./middlewares/error.middleware";
 import config from "./config";
 import logger from "./utils/logger.utils";
+import { requestLogger } from "./middlewares/requestLogger.middleware";
 
 const app = express();
 
@@ -21,7 +22,7 @@ app.use(
     }
   })
 );
-
+app.use(requestLogger);
 // Routes
 app.use("/api", routes);
 
