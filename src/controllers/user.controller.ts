@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { UserService } from "../services/user.service";
+import { errorResponse, successResponse } from "../utils/response.utils";
 
 export class UserController {
   private userService: UserService;
@@ -17,9 +18,9 @@ export class UserController {
       const userId = req.user.userId;
       const user = await this.userService.getUserById(userId);
 
-      res.status(200).json(user);
+      return successResponse(res, user, "User retrieved successfully");
     } catch (error: any) {
-      res.status(404).json({ message: error.message });
+      return errorResponse(res, error.message, 404);
     }
   };
 
@@ -33,9 +34,9 @@ export class UserController {
       const userData = req.body;
       const user = await this.userService.updateUser(userId, userData);
 
-      res.status(200).json(user);
+      return successResponse(res, user, "User updated successfully");
     } catch (error: any) {
-      res.status(400).json({ message: error.message });
+      return errorResponse(res, error.message, 400);
     }
   };
 
@@ -48,9 +49,9 @@ export class UserController {
       const userId = req.user.userId;
       await this.userService.deleteUser(userId);
 
-      res.status(204).send();
+      return successResponse(res, null, "User deleted successfully", 204);
     } catch (error: any) {
-      res.status(400).json({ message: error.message });
+      return errorResponse(res, error.message, 400);
     }
   };
 }

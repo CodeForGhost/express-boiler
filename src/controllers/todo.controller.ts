@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { TodoService } from "../services/todo.service";
 import { TodoInput } from "../types/todo.types";
+import { errorResponse, successResponse } from "../utils/response.utils";
 
 export class TodoController {
   private todoService: TodoService;
@@ -20,9 +21,9 @@ export class TodoController {
 
       const todo = await this.todoService.createTodo(todoData, userId);
 
-      res.status(201).json(todo);
+      return successResponse(res, todo, "Todo created successfully", 201);
     } catch (error: any) {
-      res.status(400).json({ message: error.message });
+      return errorResponse(res, error.message, 400);
     }
   };
 
@@ -37,9 +38,9 @@ export class TodoController {
 
       const todo = await this.todoService.getTodoById(todoId, userId);
 
-      res.status(200).json(todo);
+      return successResponse(res, todo, "Todo retrieved successfully");
     } catch (error: any) {
-      res.status(404).json({ message: error.message });
+      return errorResponse(res, error.message, 404);
     }
   };
 
@@ -52,9 +53,9 @@ export class TodoController {
       const userId = req.user.userId;
       const todos = await this.todoService.getAllTodos(userId);
 
-      res.status(200).json(todos);
+      return successResponse(res, todos, "Todos retrieved successfully");
     } catch (error: any) {
-      res.status(400).json({ message: error.message });
+      return errorResponse(res, error.message, 400);
     }
   };
 
@@ -70,9 +71,9 @@ export class TodoController {
 
       const todo = await this.todoService.updateTodo(todoId, userId, todoData);
 
-      res.status(200).json(todo);
+      return successResponse(res, todo, "Todo updated successfully");
     } catch (error: any) {
-      res.status(400).json({ message: error.message });
+      return errorResponse(res, error.message, 400);
     }
   };
 
@@ -87,9 +88,9 @@ export class TodoController {
 
       await this.todoService.deleteTodo(todoId, userId);
 
-      res.status(204).send();
+      return successResponse(res, null, "Todo deleted successfully", 204);
     } catch (error: any) {
-      res.status(400).json({ message: error.message });
+      return errorResponse(res, error.message, 400);
     }
   };
 }
