@@ -1,9 +1,6 @@
-import { PrismaClient } from "@prisma/client";
+import prisma from "../lib/prismaConfig";
 import { UserInput, UserOutput } from "../types/user.types";
 import bcrypt from "bcrypt";
-
-const prisma = new PrismaClient();
-
 export class UserModel {
   async create(data: UserInput): Promise<UserOutput> {
     const hashedPassword = await bcrypt.hash(data.password, 10);

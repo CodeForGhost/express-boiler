@@ -1,7 +1,5 @@
-import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
-
-const prisma = new PrismaClient();
+import prisma from "../lib/prismaConfig";
 
 export class AuthModel {
   async validateUser(email: string, password: string) {

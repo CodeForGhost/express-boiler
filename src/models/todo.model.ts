@@ -1,7 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+import prisma from "../lib/prismaConfig";
 import { TodoInput, TodoOutput } from "../types/todo.types";
-
-const prisma = new PrismaClient();
 
 export class TodoModel {
   async create(data: TodoInput, userId: string): Promise<TodoOutput> {
