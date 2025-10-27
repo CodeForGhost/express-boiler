@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { AuthModel } from "../models/auth.model";
 import { UserModel } from "../models/user.model";
 import { LoginInput, AuthResponse } from "../types/auth.types";
@@ -13,14 +14,17 @@ export class AuthService {
     this.userModel = new UserModel();
   }
 
-  async register(userData: UserInput): Promise<AuthResponse> {
-    const existingUser = await this.userModel.findByEmail(userData.email);
+  async register(
+    tx: Prisma.TransactionClient,
+    userData: UserInput
+  ): Promise<AuthResponse> {
+    const existingUser = await this.userModel.findByEmail(tx, userData.email);
 
     if (existingUser) {
       throw new Error("User with this email already exists");
     }
 
-    const user = await this.userModel.create(userData);
+    const user = await this.userModel.create(tx, userData);
 
     const token = generateToken({
       userId: user.id,
@@ -37,8 +41,12 @@ export class AuthService {
     };
   }
 
-  async login(credentials: LoginInput): Promise<AuthResponse> {
+  async login(
+    tx: Prisma.TransactionClient,
+    credentials: LoginInput
+  ): Promise<AuthResponse> {
     const user = await this.authModel.validateUser(
+      tx,
       credentials.email,
       credentials.password
     );

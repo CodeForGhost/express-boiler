@@ -1,9 +1,13 @@
 import bcrypt from "bcrypt";
-import prisma from "../lib/prismaConfig";
+import { Prisma } from "@prisma/client";
 
 export class AuthModel {
-  async validateUser(email: string, password: string) {
-    const user = await prisma.user.findUnique({
+  async validateUser(
+    tx: Prisma.TransactionClient,
+    email: string,
+    password: string
+  ) {
+    const user = await tx.user.findUnique({
       where: { email },
     });
 

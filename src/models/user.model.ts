@@ -1,11 +1,14 @@
-import prisma from "../lib/prismaConfig";
+import { Prisma } from "@prisma/client";
 import { UserInput, UserOutput } from "../types/user.types";
 import bcrypt from "bcrypt";
 export class UserModel {
-  async create(data: UserInput): Promise<UserOutput> {
+  async create(
+    tx: Prisma.TransactionClient,
+    data: UserInput
+  ): Promise<UserOutput> {
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
-    const user = await prisma.user.create({
+    const user = await tx.user.create({
       data: {
         ...data,
         password: hashedPassword,
@@ -22,14 +25,17 @@ export class UserModel {
     return user;
   }
 
-  async findByEmail(email: string) {
-    return prisma.user.findUnique({
+  async findByEmail(tx: Prisma.TransactionClient, email: string) {
+    return tx.user.findUnique({
       where: { email },
     });
   }
 
-  async findById(id: string): Promise<UserOutput | null> {
-    const user = await prisma.user.findUnique({
+  async findById(
+    tx: Prisma.TransactionClient,
+    id: string
+  ): Promise<UserOutput | null> {
+    const user = await tx.user.findUnique({
       where: { id },
       select: {
         id: true,
@@ -44,6 +50,7 @@ export class UserModel {
   }
 
   async update(
+    tx: Prisma.TransactionClient,
     id: string,
     data: Partial<UserInput>
   ): Promise<UserOutput | null> {
@@ -53,7 +60,7 @@ export class UserModel {
       updateData.password = await bcrypt.hash(data.password, 10);
     }
 
-    const user = await prisma.user.update({
+    const user = await tx.user.update({
       where: { id },
       data: updateData,
       select: {
@@ -68,8 +75,11 @@ export class UserModel {
     return user;
   }
 
-  async delete(id: string): Promise<UserOutput | null> {
-    const user = await prisma.user.delete({
+  async delete(
+    tx: Prisma.TransactionClient,
+    id: string
+  ): Promise<UserOutput | null> {
+    const user = await tx.user.delete({
       where: { id },
       select: {
         id: true,

@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { TodoModel } from "../models/todo.model";
 import { TodoInput, TodoOutput } from "../types/todo.types";
 
@@ -8,12 +9,20 @@ export class TodoService {
     this.todoModel = new TodoModel();
   }
 
-  async createTodo(data: TodoInput, userId: string): Promise<TodoOutput> {
-    return this.todoModel.create(data, userId);
+  async createTodo(
+    tx: Prisma.TransactionClient,
+    data: TodoInput,
+    userId: string
+  ): Promise<TodoOutput> {
+    return this.todoModel.create(tx, data, userId);
   }
 
-  async getTodoById(id: string, userId: string): Promise<TodoOutput> {
-    const todo = await this.todoModel.findById(id, userId);
+  async getTodoById(
+    tx: Prisma.TransactionClient,
+    id: string,
+    userId: string
+  ): Promise<TodoOutput> {
+    const todo = await this.todoModel.findById(tx, id, userId);
 
     if (!todo) {
       throw new Error("Todo not found");
@@ -22,16 +31,20 @@ export class TodoService {
     return todo;
   }
 
-  async getAllTodos(userId: string): Promise<TodoOutput[]> {
-    return this.todoModel.findAll(userId);
+  async getAllTodos(
+    tx: Prisma.TransactionClient,
+    userId: string
+  ): Promise<TodoOutput[]> {
+    return this.todoModel.findAll(tx, userId);
   }
 
   async updateTodo(
+    tx: Prisma.TransactionClient,
     id: string,
     userId: string,
     data: Partial<TodoInput>
   ): Promise<TodoOutput> {
-    const todo = await this.todoModel.update(id, userId, data);
+    const todo = await this.todoModel.update(tx, id, userId, data);
 
     if (!todo) {
       throw new Error("Todo not found");
@@ -40,8 +53,12 @@ export class TodoService {
     return todo;
   }
 
-  async deleteTodo(id: string, userId: string): Promise<boolean> {
-    const deleted = await this.todoModel.delete(id, userId);
+  async deleteTodo(
+    tx: Prisma.TransactionClient,
+    id: string,
+    userId: string
+  ): Promise<boolean> {
+    const deleted = await this.todoModel.delete(tx, id, userId);
 
     if (!deleted) {
       throw new Error("Todo not found");
